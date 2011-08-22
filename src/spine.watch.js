@@ -2,9 +2,10 @@
   var Watch;
   Watch = {
     bind: function(record, prop, handler) {
-      var current, getter, previous, setter;
+      var current, getter, previous, proto, setter;
       previous = record[prop];
       current = previous;
+      proto = record.__proto__ ? record.__proto__ : record;
       getter = function() {
         return previous;
       };
@@ -14,15 +15,15 @@
       };
       if (delete record[prop]) {
         if (Object.defineProperty) {
-          return Object.defineProperty(record.__proto__, prop, {
+          return Object.defineProperty(proto, prop, {
             get: getter,
             set: setter,
             enumerable: true,
             configurable: true
           });
         } else if (Object.prototype.__defineGetter__ && Object.prototype.__defineSetter__) {
-          Object.prototype.__defineGetter__.call(record, prop, getter);
-          return Object.prototype.__defineSetter__.call(record, prop, setter);
+          Object.prototype.__defineGetter__.call(proto, prop, getter);
+          return Object.prototype.__defineSetter__.call(proto, prop, setter);
         }
       }
     },

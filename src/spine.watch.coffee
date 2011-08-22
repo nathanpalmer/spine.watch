@@ -2,6 +2,7 @@ Watch =
 	bind: (record, prop, handler) ->
 		previous = record[prop]
 		current = previous
+		proto = if record.__proto__ then record.__proto__ else record
 
 		getter = ->
 			return previous
@@ -12,15 +13,15 @@ Watch =
 
 		if delete record[prop]
 			if Object.defineProperty
-				Object.defineProperty(record.__proto__, prop,  
+				Object.defineProperty(proto, prop,  
 					get: getter,
 					set: setter,
 					enumerable: true,
 					configurable: true
 				)
 			else if Object.prototype.__defineGetter__ and Object.prototype.__defineSetter__
-				Object.prototype.__defineGetter__.call(record, prop, getter)
-				Object.prototype.__defineSetter__.call(record, prop, setter)
+				Object.prototype.__defineGetter__.call(proto, prop, getter)
+				Object.prototype.__defineSetter__.call(proto, prop, setter)
 
 	unbind: (record, prop) ->
 		value = record[prop]
