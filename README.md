@@ -5,7 +5,7 @@ Events for property changes.
 ```javascript
 var Model = Spine.Model.setup("Model", [ "prop1", "prop2" ]);
 
-Model.extend(Spine.Watch);
+Spine.Watch.init(Model);
 
 Model.bind("update[prop1]", function(record,prop,value) {
 	// record: the record the property is on
