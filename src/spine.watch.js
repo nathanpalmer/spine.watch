@@ -1,50 +1,53 @@
-// Shim watch
-if (!Object.prototype.watch) {
-	Object.prototype.watch = function (prop, handler) {
-		var oldval = this[prop], newval = oldval,
-		getter = function () {
-			return newval;
-		},
-		setter = function (val) {
-			oldval = newval;
-			return newval = handler.call(this, prop, oldval, val);
-		};
-		if (delete this[prop]) { // can't watch constants
-			if (Object.defineProperty) { // ECMAScript 5
-				Object.defineProperty(this, prop, {
-					get: getter,
-					set: setter,
-					enumerable: true,
-					configurable: true
-				});
-			} else if (Object.prototype.__defineGetter__ && Object.prototype.__defineSetter__) { // legacy
-				Object.prototype.__defineGetter__.call(this, prop, getter);
-				Object.prototype.__defineSetter__.call(this, prop, setter);
-			}
-		}
-	};
-}
-
-// Shim unwatch
-if (!Object.prototype.unwatch) {
-	Object.prototype.unwatch = function (prop) {
-		var val = this[prop];
-		delete this[prop]; // remove accessors
-		this[prop] = val;
-	};
-}
-
-Spine.Watch = {
-	create: function(atts) {
-		var record = this.init(atts);
-
-		for(var i=0;i<this.attributes.length;i++) {
-			var attribute = this.attributes[i];
-			record.watch(attribute, function(prop,oldvalue,newvalue) {
-				this.trigger("update[" + prop + "]", record, prop, newvalue, oldvalue);
-			});
-		}
-
-		return record.save();
-	}
-}
+(function() {
+  var Watch;
+  Watch = {
+    bind: function(record, prop, handler) {
+      var current, getter, previous, setter;
+      previous = record[prop];
+      current = previous;
+      getter = function() {
+        return previous;
+      };
+      setter = function(value) {
+        previous = current;
+        return current = handler.call(record, prop, previous, value);
+      };
+      if (delete record[prop]) {
+        if (Object.defineProperty) {
+          return Object.defineProperty(record.__proto__, prop, {
+            get: getter,
+            set: setter,
+            enumerable: true,
+            configurable: true
+          });
+        } else if (Object.prototype.__defineGetter__ && Object.prototype.__defineSetter__) {
+          Object.prototype.__defineGetter__.call(record, prop, getter);
+          return Object.prototype.__defineSetter__.call(record, prop, setter);
+        }
+      }
+    },
+    unbind: function(record, prop) {
+      var value;
+      value = record[prop];
+      delete this[prop];
+      return record[prop] = value;
+    },
+    init: function(model) {
+      return model.bind("create", function(record) {
+        var attribute, _i, _len, _ref, _results;
+        _ref = model.attributes;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          attribute = _ref[_i];
+          Watch.bind(record.__proto__, attribute, function(prop, previous, current) {
+            console.log("trigger update[" + prop + "]");
+            return this.trigger("update[" + prop + "]", record, prop, current, previous);
+          });
+          _results.push(console.log(attribute));
+        }
+        return _results;
+      });
+    }
+  };
+  this.Spine.Watch = Watch;
+}).call(this);

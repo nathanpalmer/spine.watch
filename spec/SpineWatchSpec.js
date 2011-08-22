@@ -3,34 +3,38 @@ describe("Spine.Watch", function() {
 
 	beforeEach(function() {
 		Model = Spine.Model.setup("Model", [ "prop1", "prop2" ]);
-	});
-
-	it("can extend a model", function() {
-		Model.extend(Spine.Watch);
+		Spine.Watch.init(Model)
 	});
 
 	describe("binding to collection", function() {
-		var spy, obj;
+		var spy1, spy2, obj;
 
 		beforeEach(function() {
-			spy = sinon.spy();
+			spy1 = sinon.spy();
+			spy2 = sinon.spy();
 			obj = Model.create();
 
-			Model.bind("update[prop1]", spy);
+			Model.bind("update[prop1]", spy1);
+			Model.bind("update[prop2]", spy2);
 		});
 
 		it("does not trigger when property is not changed", function() {
-			expect(spy.called).toBe(false);
+			expect(spy1.called).toBe(false);
+			expect(spy2.called).toBe(false);
 		});
 
 		it("triggers event when property is changed", function() {
 			obj.prop1 = "Test";
-			expect(spy.called).toBe(false);
+			runs(function() {
+				expect(spy1.called).toBe(true);
+				expect(spy2.called).toBe(false);
+			}, 250);
 		});
 
 		it("triggers event once when property is changed", function() {
 			obj.prop1 = "Test";
-			expect(spy.calledOnce).toBe(false);
+			expect(spy1.calledOnce).toBe(true);
+			expect(spy2.called).toBe(false);
 		});
 	});
 
@@ -50,12 +54,16 @@ describe("Spine.Watch", function() {
 
 		it("triggers event when property is changed", function() {
 			obj.prop1 = "Test";
-			expect(spy.called).toBe(false);
+			runs(function() {
+				expect(spy.called).toBe(true);	
+			}, 250);
 		});
 
 		it("triggers event once when property is changed", function() {
 			obj.prop1 = "Test";
-			expect(spy.calledOnce).toBe(false);
+			runs(function() {
+				expect(spy.calledOnce).toBe(true);
+			});
 		});
 	});
 });
