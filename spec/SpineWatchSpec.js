@@ -65,5 +65,12 @@ describe("Spine.Watch", function() {
 				expect(spy.calledOnce).toBe(true);
 			});
 		});
+
+		it("doesnt change the value", function() {
+			obj.prop1 = "Test";
+			runs(function() {
+				expect(obj.prop1).toBe("Test");
+			}, 250);
+		})
 	});
 });

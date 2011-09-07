@@ -2,16 +2,15 @@
   var Watch;
   Watch = {
     bind: function(record, prop, handler) {
-      var current, getter, previous, proto, setter;
-      previous = record[prop];
-      current = previous;
+      var current, getter, proto, setter;
+      current = record[prop];
       proto = record.__proto__ ? record.__proto__ : record;
       getter = function() {
-        return previous;
+        return current;
       };
       setter = function(value) {
-        previous = current;
-        return current = handler.call(record, prop, previous, value);
+        handler.call(record, prop, current, value);
+        return current = value;
       };
       if (delete record[prop]) {
         if (Object.defineProperty) {
@@ -34,20 +33,19 @@
       return record[prop] = value;
     },
     init: function(model) {
-      return model.bind("create", function(record) {
-        var attribute, _i, _len, _ref, _results;
+      model.bind("create", function(record) {
+        var attribute, trigger, _i, _len, _ref;
+        trigger = function(prop, previous, current) {
+          return this.trigger("update[" + prop + "]", record, prop, current, previous);
+        };
         _ref = model.attributes;
-        _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           attribute = _ref[_i];
-          Watch.bind(record.__proto__, attribute, function(prop, previous, current) {
-            console.log("trigger update[" + prop + "]");
-            return this.trigger("update[" + prop + "]", record, prop, current, previous);
-          });
-          _results.push(console.log(attribute));
+          Watch.bind(record.__proto__, attribute, trigger);
         }
-        return _results;
+        return this;
       });
+      return this;
     }
   };
   this.Spine.Watch = Watch;

@@ -1,15 +1,14 @@
 Watch =
 	bind: (record, prop, handler) ->
-		previous = record[prop]
-		current = previous
+		current = record[prop]
 		proto = if record.__proto__ then record.__proto__ else record
 
 		getter = ->
-			return previous
+			return current
 
 		setter = (value) ->
-			previous = current
-			return current = handler.call(record, prop, previous, value)
+			handler.call(record, prop, current, value)
+			return current = value
 
 		if delete record[prop]
 			if Object.defineProperty
@@ -19,7 +18,8 @@ Watch =
 					enumerable: true,
 					configurable: true
 				)
-			else if Object.prototype.__defineGetter__ and Object.prototype.__defineSetter__
+			else if Object.prototype.__defineGetter__ and 
+					Object.prototype.__defineSetter__
 				Object.prototype.__defineGetter__.call(proto, prop, getter)
 				Object.prototype.__defineSetter__.call(proto, prop, setter)
 
@@ -30,13 +30,17 @@ Watch =
 
 	init: (model) ->
 		model.bind("create", (record) ->
-			for attribute in model.attributes
-				Watch.bind(record.__proto__, attribute, (prop,previous,current) ->
-					console.log("trigger update[#{prop}]")
-					@trigger("update[#{prop}]", record, prop, current, previous)
-				)
-				console.log(attribute)
-		)
+			trigger = (prop,previous,current) ->
+				@trigger("update[#{prop}]", record, prop, current, previous)
 
+			for attribute in model.attributes
+				#if typeof record.__proto__.watch is "undefined"
+					Watch.bind(record.__proto__, attribute, trigger)
+				#else
+					#record.__proto__.watch(attribute, trigger)
+
+			@
+		)
+		@
 
 @Spine.Watch = Watch
