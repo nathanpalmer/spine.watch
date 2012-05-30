@@ -1,7 +1,6 @@
 Watch =
 	bind: (record, prop, handler) ->
 		current = record[prop]
-		proto = if record.__proto__ then record.__proto__ else record
 
 		getter = ->
 			return current
@@ -12,7 +11,7 @@ Watch =
 
 		if delete record[prop]
 			if Object.defineProperty
-				Object.defineProperty(proto, prop,  
+				Object.defineProperty(record.constructor.prototype, prop,  
 					get: getter,
 					set: setter,
 					enumerable: true,
@@ -20,8 +19,8 @@ Watch =
 				)
 			else if Object.prototype.__defineGetter__ and 
 					Object.prototype.__defineSetter__
-				Object.prototype.__defineGetter__.call(proto, prop, getter)
-				Object.prototype.__defineSetter__.call(proto, prop, setter)
+				Object.prototype.__defineGetter__.call(record.constructor.prototype, prop, getter)
+				Object.prototype.__defineSetter__.call(record.constructor.prototype, prop, setter)
 
 	unbind: (record, prop) ->
 		value = record[prop]
@@ -35,7 +34,7 @@ Watch =
 
 			for attribute in model.attributes
 				#if typeof record.__proto__.watch is "undefined"
-					Watch.bind(record.__proto__, attribute, trigger)
+					Watch.bind(record, attribute, trigger)
 				#else
 					#record.__proto__.watch(attribute, trigger)
 
