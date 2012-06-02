@@ -2,8 +2,13 @@ describe("Spine.Watch", function() {
 	var Model;
 
 	beforeEach(function() {
-		Model = Spine.Model.setup("Model", [ "prop1", "prop2" ]);
-		Spine.Watch.init(Model)
+		Model = Spine.Model.sub({
+			init: function() {
+				//Spine.Watch.init(this)
+			}
+		})
+		Model.configure("Model", "prop1", "prop2");
+		//Spine.Watch.init(Model)
 	});
 
 	describe("binding to collection", function() {
