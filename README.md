@@ -3,9 +3,8 @@
 Events for property changes.
 
 ```javascript
-var Model = Spine.Model.setup("Model", [ "prop1", "prop2" ]);
-
-Spine.Watch.init(Model);
+var Model = Spine.Model.dup();
+Model.configure("Model", "prop1", "prop2");
 
 Model.bind("update[prop1]", function(record,prop,value) {
 	// record: the record the property is on
