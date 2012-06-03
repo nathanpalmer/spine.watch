@@ -5,8 +5,9 @@ bind = (record, prop, handler) ->
 		return current
 
 	setter = (value) ->
+                previous = current
+                current = value
 		handler.call(record, prop, current, value)
-		return current = value
 
 	if delete record[prop]
 		if Object.defineProperty
@@ -23,21 +24,37 @@ bind = (record, prop, handler) ->
 
 unbind = (record, prop) ->
 	value = record[prop]
-	delete this[prop]
-	record[prop] = value
+        delete this[prop]
+        record[prop] = value
 
-@Spine.Model::clone = ->
-	clone = Object.create(@)
+rop] = value
 
-	trigger = (prop,previous,current) ->
-		@trigger("update[#{prop}]", clone, prop, current, previous)
 
-	bind(clone, attribute, trigger) for attribute in clone.constructor.attributes
+op] = value
 
-	clone.bind("destroy", -> 
-		unbind(this, attribute) for attribute in this.constructor.attributes
-	)
 
-        clone
+eWatch: ->
 
-@Spine.Watch = true
+
+
+eWatch: ->
+  trigger = (prop,previous,current) ->
+s,current) ->
+          @trigger("update[#{prop}]", current, prop, previous)
+
+p, previous)
+
+  bind(@, attribute, trigger) for attribute in @constructor.attributes
+
+r.attributes
+
+  @bind("destroy", ->
+"destroy", ->
+          unbind(@, attribute) for attribute in @constructor.attributes
+or.attributes
+  )
+
+tributes
+  )
+
+  @watchEnabled = true
