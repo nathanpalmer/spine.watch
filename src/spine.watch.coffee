@@ -38,4 +38,6 @@ unbind = (record, prop) ->
 		unbind(this, attribute) for attribute in this.constructor.attributes
 	)
 
-	clone
+        clone
+
+@Spine.Watch = true

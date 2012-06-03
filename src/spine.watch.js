@@ -53,4 +53,5 @@
     });
     return clone;
   };
+  this.Spine.Watch = true;
 }).call(this);
