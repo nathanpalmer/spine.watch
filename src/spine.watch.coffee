@@ -5,8 +5,8 @@ bind = (record, prop, handler) ->
 		return current
 
 	setter = (value) ->
-                previous = current
-                current = value
+		previous = current
+		current = value
 		handler.call(record, prop, current, value)
 
 	if delete record[prop]
@@ -24,37 +24,17 @@ bind = (record, prop, handler) ->
 
 unbind = (record, prop) ->
 	value = record[prop]
-        delete this[prop]
-        record[prop] = value
+	delete this[prop]
+	record[prop] = value
 
-rop] = value
+@Spine.Watch =
+	prepareWatch: ->
+		trigger = (prop,previous,current) ->
+			@trigger("update[#{prop}]", current, prop, previous)
 
+		bind(@, attribute, trigger) for attribute in @constructor.attributes
 
-op] = value
-
-
-eWatch: ->
-
-
-
-eWatch: ->
-  trigger = (prop,previous,current) ->
-s,current) ->
-          @trigger("update[#{prop}]", current, prop, previous)
-
-p, previous)
-
-  bind(@, attribute, trigger) for attribute in @constructor.attributes
-
-r.attributes
-
-  @bind("destroy", ->
-"destroy", ->
-          unbind(@, attribute) for attribute in @constructor.attributes
-or.attributes
-  )
-
-tributes
-  )
-
-  @watchEnabled = true
+		@bind("destroy", -> 
+			unbind(@, attribute) for attribute in @constructor.attributes
+		)
+		@
