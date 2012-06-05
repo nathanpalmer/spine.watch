@@ -27,7 +27,7 @@ unbind = (record, prop) ->
 	delete this[prop]
 	record[prop] = value
 
-@Spine.Watch =
+Watch =
 	prepareWatch: ->
 		trigger = (prop,previous,current) ->
 			@trigger("update[#{prop}]", current, prop, previous)
@@ -38,3 +38,7 @@ unbind = (record, prop) ->
 			unbind(@, attribute) for attribute in @constructor.attributes
 		)
 		@
+
+Watch.activators = [ "prepareWatch" ] if Spine.Activator
+
+@Spine.Watch = Watch
