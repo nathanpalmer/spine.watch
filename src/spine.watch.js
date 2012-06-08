@@ -53,6 +53,7 @@
         }
         return _results;
       });
+      this.watchEnabled = true;
       return this;
     }
   };

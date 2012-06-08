@@ -37,6 +37,9 @@ Watch =
 		@bind("destroy", -> 
 			unbind(@, attribute) for attribute in @constructor.attributes
 		)
+
+		@watchEnabled = true
+		
 		@
 
 Watch.activators = [ "prepareWatch" ] if Spine.Activator
