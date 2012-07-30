@@ -84,5 +84,15 @@ describe("Spine.Watch", function() {
 			expect(obj2.prop1).toBe("base")
 		});
 
+		it("takes value from base", function() {
+			obj.prop1 = "base";
+
+			var obj1 = obj.clone();
+			var obj2 = obj.clone();
+
+			obj.prop1 = "Test";
+			expect(obj2.prop1).toBe("Test")
+		});
+
 	});
 });
