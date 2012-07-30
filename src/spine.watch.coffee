@@ -5,8 +5,11 @@ bind = (record, prop, handler) ->
 		return current
 
 	setter = (value) ->
+		return if current is value
+		return if current and value and typeof current is 'object' and typeof value is 'object' and Object.getPrototypeOf(current) is Object.getPrototypeOf(value)
 		previous = current
 		current = value
+		#console.log("Updating #{prop} from '#{previous}' to '#{current}'")
 		handler.call(record, prop, current, value)
 
 	if delete record[prop]
@@ -28,15 +31,21 @@ unbind = (record, prop) ->
 	record[prop] = value
 
 Watch =
-	prepareWatch: ->
+	prepareWatch: (model,callback) ->
 		trigger = (prop,previous,current) ->
-			@trigger("update[#{prop}]", current, prop, previous)
+			if callback
+				callback("update[#{prop}]", current, prop, previous)
+			else
+				@trigger("update[#{prop}]", current, prop, previous)
 
-		bind(@, attribute, trigger) for attribute in @constructor.attributes
+		if model
+			bind(model, attribute, trigger) for attribute of model
+		else
+			bind(@, attribute, trigger) for attribute in @constructor.attributes
 
-		@bind("destroy", -> 
-			unbind(@, attribute) for attribute in @constructor.attributes
-		)
+			@bind("destroy", -> 
+				unbind(@, attribute) for attribute in @constructor.attributes
+			)
 
 		@watchEnabled = true
 		
