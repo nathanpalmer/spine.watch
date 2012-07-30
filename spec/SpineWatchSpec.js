@@ -13,7 +13,7 @@ describe("Spine.Watch", function() {
 		beforeEach(function() {
 			spy1 = sinon.spy();
 			spy2 = sinon.spy();
-			obj = Model.create();
+			obj = new Model();
 
 			Model.bind("update[prop1]", spy1);
 			Model.bind("update[prop2]", spy2);
@@ -44,7 +44,7 @@ describe("Spine.Watch", function() {
 
 		beforeEach(function() {
 			spy = sinon.spy();
-			obj = Model.create();
+			obj = new Model();
 
 			obj.bind("update[prop1]", spy);
 		});
@@ -72,6 +72,17 @@ describe("Spine.Watch", function() {
 			runs(function() {
 				expect(obj.prop1).toBe("Test");
 			}, 250);
-		})
+		});
+
+		it("only changes current model", function() {
+			obj.prop1 = "base";
+
+			var obj1 = obj.clone();
+			var obj2 = obj.clone();
+
+			obj1.prop1 = "Test";
+			expect(obj2.prop1).toBe("base")
+		});
+
 	});
 });

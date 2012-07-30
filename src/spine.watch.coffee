@@ -54,3 +54,8 @@ Watch =
 Watch.activators = [ "prepareWatch" ] if Spine.Activator
 
 @Spine.Watch = Watch
+
+# Duck punching Spine's clone method so we can add another watch layer
+@Spine.Model::clone = ->
+	o = Object.create(@)
+	o.prepareWatch();

@@ -84,4 +84,10 @@
 
   this.Spine.Watch = Watch;
 
+  this.Spine.Model.prototype.clone = function() {
+    var o;
+    o = Object.create(this);
+    return o.prepareWatch();
+  };
+
 }).call(this);
