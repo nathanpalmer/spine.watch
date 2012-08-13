@@ -11,7 +11,7 @@ Watch =
 				return if record["_"+prop] and value and typeof record["_"+prop] is 'object' and typeof value is 'object' and Object.getPrototypeOf(record["_"+prop]) is Object.getPrototypeOf(value)
 				previous = record["_"+prop]
 				record["_"+prop] = value
-				#console.log("Updating #{prop} from '#{previous}' to '#{current}'")
+				console.log("Updating #{prop} from '#{previous}' to '#{record["_"+prop]}'")
 				handler.call(record, prop, record["_"+prop], value)
 
 			if delete record[prop]
@@ -34,8 +34,10 @@ Watch =
 
 		trigger = (prop,previous,current) ->
 			if callback
+				callback("update[]", current, prop, previous)
 				callback("update[#{prop}]", current, prop, previous)
 			else
+				@trigger("update[]", current, prop, previous)
 				@trigger("update[#{prop}]", current, prop, previous)
 
 		if model
@@ -58,4 +60,6 @@ Watch.activators = [ "prepareWatch" ] if Spine.Activator
 # Duck punching Spine's clone method so we can add another watch layer
 @Spine.Model::clone = ->
 	o = Object.create(@)
-	o.prepareWatch();
+	if o.prepareWatch
+		o.prepareWatch();
+	return o
